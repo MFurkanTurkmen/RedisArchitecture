@@ -19,10 +19,11 @@ redis:
   timeout: 10000ms
   lettuce:
     pool:
-      max-active: 8
-      max-wait: -1ms
-      max-idle: 8
-      min-idle: 0
+      max-active: 8      # Maksimum aktif bağlantı sayısı
+      max-idle: 8        # Havuzda tutulacak maksimum boşta bağlantı
+      min-idle: 0        # Havuzda minimum tutulacak boşta bağlantı
+      max-wait: -1ms     # Bağlantı almak için maksimum bekleme süres
+
 
 management:
 endpoints:
@@ -39,3 +40,9 @@ health:
     enabled: true         # Redis health check'i aktif
   db:
     enabled: true
+
+zipkin:
+  enabled: true
+  base-url: http://localhost:9411
+  service:
+    name: benimredisim

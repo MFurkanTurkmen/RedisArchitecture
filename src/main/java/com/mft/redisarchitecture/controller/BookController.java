@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/Book")
+@RequestMapping("/book")
 @RequiredArgsConstructor
 @RestController
 public class BookController {
@@ -28,8 +28,8 @@ public class BookController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<BookRS>> listBook() {
-        return ResponseEntity.ok(bookService.listBook());
+    public ResponseEntity<List<BookRS>> listBook(@RequestParam int adet) {
+        return ResponseEntity.ok(bookService.listBook(adet));
     }
 
 

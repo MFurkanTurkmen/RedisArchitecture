@@ -4,7 +4,7 @@ import com.mft.redisarchitecture.dto.request.BookRQ;
 import com.mft.redisarchitecture.dto.response.BookRS;
 import com.mft.redisarchitecture.entity.Book;
 import com.mft.redisarchitecture.exception.AppException;
-import com.mft.redisarchitecture.mapper.IBookMapper;
+import com.mft.redisarchitecture.mapper.BookMapper;
 import com.mft.redisarchitecture.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BookService {
     private final BookRepository bookRepository;
-    private final IBookMapper bookMapper;
+    private final BookMapper bookMapper;
     private final RedisCacheService redisCacheService;
 
     private static final String BOOK_CACHE_PREFIX = "book:";
@@ -68,7 +68,7 @@ public class BookService {
     }
 
     @Cacheable(value = "books", key = "'all'")
-    public List<BookRS> listBook() {
+    public List<BookRS> listBook(int adet) {
         // Önce cache'den kontrol et
         Object cachedBooks = redisCacheService.get(BOOKS_CACHE_KEY);
         if (cachedBooks != null) {
@@ -76,9 +76,9 @@ public class BookService {
         }
 
         // Cache'de yoksa DB'den getir
-        List<Book> books = bookRepository.findAll();
+        List<Book> books = bookRepository.findBooks(adet);
         List<BookRS> bookRSList = books.stream()
-                .map(bookMapper::map)
+                .map(bookMapper::toDto)
                 .collect(Collectors.toList());
 
         // Cache'e kaydet
