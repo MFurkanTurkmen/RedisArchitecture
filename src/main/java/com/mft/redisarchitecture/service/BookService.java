@@ -37,7 +37,7 @@ public class BookService {
         // Cache'i güncelle
         BookRS bookRS = getBook(book.getId());
         redisCacheService.saveWithExpiration(BOOK_CACHE_PREFIX + book.getId(),
-                bookRS, CACHE_TTL, TimeUnit.HOURS);
+                bookRS, CACHE_TTL, TimeUnit.SECONDS);
 
         return bookRS;
     }
