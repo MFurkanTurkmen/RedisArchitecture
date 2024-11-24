@@ -1,48 +1,29 @@
-# Redis Cache Service ve Spring Redis Uygulaması
+# Redis Mimari Projesi
 
-## İçindekiler
-- [Proje Hakkında](#proje-hakkında)
-- [Mimari](#mimari)
-- [Redis Annotations](#redis-annotations)
-- [Konfigürasyon](#konfigürasyon)
-- [Monitoring](#monitoring)
+## Genel Bakış
+Bu proje, Spring Boot uygulamasında Redis önbellekleme uygulamasını göstermektedir.
 
-## Proje Hakkında
-Bu proje, Spring Boot uygulamalarında Redis önbellekleme sisteminin nasıl kullanılacağını gösteren bir örnek uygulamadır. Redis Cache Service ile veritabanı yükünü azaltıp, uygulama performansını artırabiliriz.
+## Kullanılan Teknolojiler
+- Spring Boot
+- Redis
+- Spring Data Redis
+- Lombok
+- Spring Web
 
-## Mimari
-![Redis Architecture](docs/images/redis-architecture.png)
-![System Architecture](docs/images/system-architecture.png)
+## Kurulum
+1. Projeyi klonlayın
+2. Redis'i yerel makinenize kurun
+3. application.properties'de Redis bağlantısını yapılandırın
+4. Uygulamayı çalıştırın
 
-## Redis Annotations
-![Redis Annotations](docs/images/redis-annotations.png)
+## API Endpointleri
+[API endpointlerinizi buraya listeleyin]
 
-### Temel Annotations
-- @EnableCaching: Spring uygulamasında önbellekleme özelliğini aktif hale getirir
-- @Cacheable: Metod sonuçlarını önbellekte saklar
-- @CachePut: Metod sonucunu her zaman çalıştırır ve önbelleğe kaydeder
-- @CacheEvict: Önbellekteki veriyi siler
+## Önbellekleme Stratejileri
+[Önbellekleme stratejilerinizi açıklayın]
 
-## Konfigürasyon
-```java
-@Configuration
-@EnableCaching
-public class RedisConfig {
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
-        // Redis konfigürasyon detayları
-    }
-}
-```
-
-## Monitoring
-![Redis Monitoring](docs/images/redis-monitoring.png)
-
-Redis performans metrikleri ve sistem durumu izleme ekranı üzerinden takip edilebilir. Önemli metrikler:
-- Memory kullanımı
-- Bağlantı sayısı
-- Cache hit/miss oranları
-- Komut istatistikleri
+## İzleme ve Yönetim
+[İzleme ve yönetim özelliklerini açıklayın]
 
 
 
