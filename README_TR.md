@@ -1,100 +1,48 @@
 # Redis Cache Service ve Spring Redis Uygulaması
 
+## İçindekiler
+- [Proje Hakkında](#proje-hakkında)
+- [Mimari](#mimari)
+- [Redis Annotations](#redis-annotations)
+- [Konfigürasyon](#konfigürasyon)
+- [Monitoring](#monitoring)
+
 ## Proje Hakkında
-Bu proje, Spring Boot ve Redis kullanarak yüksek performanslı bir önbellekleme sistemi oluşturmayı amaçlamaktadır. Uygulama, kitap verilerini yönetmek ve önbelleklemek için geliştirilmiş bir REST API sunmaktadır.
+Bu proje, Spring Boot uygulamalarında Redis önbellekleme sisteminin nasıl kullanılacağını gösteren bir örnek uygulamadır. Redis Cache Service ile veritabanı yükünü azaltıp, uygulama performansını artırabiliriz.
 
-## Özellikler
-- Kitap verilerinin CRUD işlemleri
-- Redis önbellekleme desteği
-- Özelleştirilebilir TTL süreleri
-- Otomatik önbellek yenileme
-- Yüksek performanslı veri erişimi
+## Mimari
+![Redis Architecture](docs/images/redis-architecture.png)
+![System Architecture](docs/images/system-architecture.png)
 
-## Teknolojiler
-- Spring Boot 3.3.5
-- Redis
-- PostgreSQL
-- Lombok
-- MapStruct
-- Spring Data JPA
-- Spring Cache
-- Lettuce Redis Client
+## Redis Annotations
+![Redis Annotations](docs/images/redis-annotations.png)
 
-## Gereksinimler
-- Java 21
-- Redis Server
-- PostgreSQL
-- Gradle
-
-## Sistem Mimarisi
-Uygulama üç katmanlı bir mimariye sahiptir:
-- Controller Katmanı: HTTP isteklerini karşılar
-- Service Katmanı: İş mantığını yönetir
-- Repository Katmanı: Veri erişimini sağlar
-
-## Kurulum ve Çalıştırma
-1. Redis Server'ı başlatın
-2. PostgreSQL veritabanını oluşturun
-3. application.yml dosyasını konfigüre edin
-4. Gradle ile projeyi derleyin: `./gradlew build`
-5. Uygulamayı başlatın: `./gradlew bootRun`
-
-## API Endpoints
-- POST /book/create: Yeni kitap oluşturur
-- GET /book/get?id={id}: ID'ye göre kitap getirir
-- GET /book/list?adet={adet}: Belirtilen sayıda kitap listeler
+### Temel Annotations
+- @EnableCaching: Spring uygulamasında önbellekleme özelliğini aktif hale getirir
+- @Cacheable: Metod sonuçlarını önbellekte saklar
+- @CachePut: Metod sonucunu her zaman çalıştırır ve önbelleğe kaydeder
+- @CacheEvict: Önbellekteki veriyi siler
 
 ## Konfigürasyon
-Redis ve veritabanı ayarları application.yml dosyasında yapılandırılabilir:
-- Redis host, port ve timeout
-- PostgreSQL bağlantı bilgileri
-- Cache TTL süreleri
+```java
+@Configuration
+@EnableCaching
+public class RedisConfig {
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate() {
+        // Redis konfigürasyon detayları
+    }
+}
+```
 
 ## Monitoring
-- /actuator/health: Sistem sağlık durumu
-- /actuator/info: Uygulama bilgileri
-- Zipkin entegrasyonu ile distributed tracing
+![Redis Monitoring](docs/images/redis-monitoring.png)
 
-## Test
-Testleri çalıştırmak için:
-```bash
-./gradlew test
-```
-
-## Build
-Projeyi derlemek için:
-```bash
-./gradlew clean build
-```
-
-## Cache TTL Ayarları
-- Varsayılan TTL: 1 saat
-- Özel TTL tanımlamaları service katmanında yapılabilir
-- Her cache için ayrı TTL tanımlanabilir
-
-## Hata Yönetimi
-- GlobalExceptionHandler ile merkezi hata yönetimi
-- Özelleştirilmiş hata kodları ve mesajları
-- Redis bağlantı hataları için fallback mekanizması
-
-## Katkıda Bulunma
-1. Fork yapın
-2. Feature branch oluşturun
-3. Değişikliklerinizi commit edin
-4. Branch'inizi push edin
-5. Pull request açın
-
-## Lisans
-Bu proje MIT lisansı altında lisanslanmıştır.
-
-## İletişim
-- GitHub: [MFurkanTurkmen](https://github.com/MFurkanTurkmen)
-- Email: [email protected]
-
-## Teşekkürler
-- Spring Framework ekibine
-- Redis topluluğuna
-- Tüm katkıda bulunanlara
+Redis performans metrikleri ve sistem durumu izleme ekranı üzerinden takip edilebilir. Önemli metrikler:
+- Memory kullanımı
+- Bağlantı sayısı
+- Cache hit/miss oranları
+- Komut istatistikleri
 
 
 
