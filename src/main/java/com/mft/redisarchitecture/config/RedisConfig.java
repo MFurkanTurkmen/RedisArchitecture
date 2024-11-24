@@ -34,20 +34,6 @@ public class RedisConfig {
     public LettuceConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration(redisHost, redisPort);
 
-
-        // Connection pool konfigürasyonu
-        GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
-        poolConfig.setMaxTotal(32);
-        poolConfig.setMaxIdle(16);
-        poolConfig.setMinIdle(8);
-        poolConfig.setTestOnBorrow(true);
-        poolConfig.setTestOnReturn(true);
-        poolConfig.setTestWhileIdle(true);
-        poolConfig.setMinEvictableIdleTimeMillis(Duration.ofSeconds(60).toMillis());
-        poolConfig.setTimeBetweenEvictionRunsMillis(Duration.ofSeconds(30).toMillis());
-        poolConfig.setNumTestsPerEvictionRun(3);
-        poolConfig.setBlockWhenExhausted(true);
-
         // Lettuce client konfigürasyonu
         ClientOptions clientOptions = ClientOptions.builder()
                 .timeoutOptions(TimeoutOptions.enabled(timeout))
@@ -56,14 +42,11 @@ public class RedisConfig {
                 .build();
 
         LettucePoolingClientConfiguration lettucePoolConfig = LettucePoolingClientConfiguration.builder()
-                .poolConfig(poolConfig)
                 .clientOptions(clientOptions)
                 .commandTimeout(timeout)
                 .build();
 
-        LettuceConnectionFactory factory = new LettuceConnectionFactory(redisConfig, lettucePoolConfig);
-        factory.setValidateConnection(true);
-        return factory;
+        return new LettuceConnectionFactory(redisConfig, lettucePoolConfig);
     }
 
     @Bean
