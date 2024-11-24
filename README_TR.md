@@ -1,82 +1,62 @@
-# Redis Cache Service ve Spring Redis Anotasyonları
+# Redis Mimarisi
 
-## Redis Cache Service
-Redis Cache Service, uygulamamızda verileri önbellekleme işlemlerini yönetmek için kullanılan bir servistir. Bu servis sayesinde:
-- Sık kullanılan verileri RAM'de saklayabilir
-- Veritabanı yükünü azaltabilir
-- Uygulama performansını artırabiliriz
+## Proje Genel Bakış
+Redis önbellek yapısını kullanan Spring Boot tabanlı bir uygulama.
 
-## Spring Redis Anotasyonları
+## Özellikler
+- Redis önbellekleme
+- RESTful API endpoints
+- Spring Boot entegrasyonu
 
-### @EnableCaching
-Spring uygulamasında önbellekleme özelliğini aktif hale getirir. Genellikle configuration sınıfında kullanılır.
+## Teknolojiler
+- Spring Boot
+- Redis
+- Gradle
+- Java
 
-### @Cacheable
-Metod sonuçlarını önbellekte saklar. İlk çağrıda metod çalışır ve sonuç önbelleğe alınır, sonraki çağrılarda önbellekteki veri döndürülür.
+## Sistem Mimarisi
+- Redis Cache Layer
+- Spring Service Layer
+- REST Controller Layer
+
+## Redis Önbellekleme Anotasyonları
 ```java
-@Cacheable(value = "users", key = "#id")
-public User getUser(String id) {
-    // metod içeriği
-}
+@Cacheable
+@CachePut
+@CacheEvict
 ```
 
-### @CachePut
-Metod sonucunu her zaman çalıştırır ve sonucu önbelleğe kaydeder. Veriyi güncellerken kullanılır.
-```java
-@CachePut(value = "users", key = "#user.id")
-public User updateUser(User user) {
-    // metod içeriği
-}
+## Konfigürasyon
+```yaml
+spring:
+  redis:
+    host: localhost
+    port: 6379
 ```
 
-### @CacheEvict
-Önbellekteki veriyi siler. Veri silindiğinde veya güncellendiğinde kullanılır.
-```java
-@CacheEvict(value = "users", key = "#id")
-public void deleteUser(String id) {
-    // metod içeriği
-}
-```
+## Kurulum
+1. Redis Server kurulumu
+2. Projeyi klonlama
+3. Gradle bağımlılıklarını yükleme
+4. Uygulamayı başlatma
 
-### @Caching
-Birden fazla önbellek işlemini birleştirmek için kullanılır.
-```java
-@Caching(evict = {
-    @CacheEvict("users"),
-    @CacheEvict("roles")
-})
-public void clearCache() {
-    // metod içeriği
-}
-```
+## API Dokümantasyonu
+- GET /api/data
+- POST /api/data
+- DELETE /api/data
 
-## Önbellek Süreleri (TTL)
-Redis'te saklanan verilere yaşam süresi (Time To Live - TTL) atanabilir:
-```java
-@Cacheable(value = "users", key = "#id", timeout = 3600)
-public User getUser(String id) {
-    // metod içeriği
-}
-```
+## İzleme Endpointleri
+- /actuator/health
+- /actuator/metrics
 
-## Redis Cache Service Kullanım Örneği
-```java
-@Service
-public class UserService {
-    @Autowired
-    private RedisCacheService redisCacheService;
+## Katkıda Bulunma
+1. Fork yapın
+2. Feature branch oluşturun
+3. Değişikliklerinizi commit edin
+4. Pull request açın
 
-    public User getUser(String id) {
-        String key = "user:" + id;
-        return redisCacheService.get(key, User.class)
-            .orElseGet(() -> {
-                User user = getUserFromDatabase(id);
-                redisCacheService.put(key, user);
-                return user;
-            });
-    }
-}
-```
+## Lisans
+MIT License
 
 
 
