@@ -1,29 +1,37 @@
-# Redis Mimari Projesi
+# Redis Önbellekleme Mimarisi
 
-## Genel Bakış
-Bu proje, Spring Boot uygulamasında Redis önbellekleme uygulamasını göstermektedir.
+## Proje Hakkında
+Bu proje, Spring Boot uygulamalarında Redis önbellekleme sisteminin nasıl uygulanacağını göstermektedir.
 
-## Kullanılan Teknolojiler
+## Teknolojiler
+- Java 17
 - Spring Boot
 - Redis
-- Spring Data Redis
-- Lombok
-- Spring Web
+- Gradle
+- Docker
+
+## Mimari Yapı
+- Redis Cache yapılandırması
+- Service katmanında önbellekleme
+- Repository pattern
+- RESTful API endpoints
 
 ## Kurulum
-1. Projeyi klonlayın
-2. Redis'i yerel makinenize kurun
-3. application.properties'de Redis bağlantısını yapılandırın
-4. Uygulamayı çalıştırın
+1. Redis'i Docker ile başlatın:
+```docker run --name redis -p 6379:6379 -d redis```
+2. Projeyi klonlayın
+3. Gradle ile bağımlılıkları yükleyin
+4. Uygulamayı başlatın
 
-## API Endpointleri
-[API endpointlerinizi buraya listeleyin]
+## Kullanım
+API endpointleri ve önbellekleme örnekleri için controller sınıflarını inceleyin.
 
-## Önbellekleme Stratejileri
-[Önbellekleme stratejilerinizi açıklayın]
-
-## İzleme ve Yönetim
-[İzleme ve yönetim özelliklerini açıklayın]
+## Katkıda Bulunma
+1. Fork edin
+2. Feature branch oluşturun
+3. Değişikliklerinizi commit edin
+4. Branch'inizi push edin
+5. Pull request açın
 
 
 
