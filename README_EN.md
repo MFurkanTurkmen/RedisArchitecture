@@ -1,26 +1,34 @@
-# Redis Architecture Project
+# Redis Caching Architecture
 
-## Overview
-This project demonstrates the implementation of Redis caching in a Spring Boot application.
+## About Project
+This project demonstrates how to implement Redis caching system in Spring Boot applications.
 
-## Technologies Used
+## Technologies
+- Java 17
 - Spring Boot
 - Redis
-- Spring Data Redis
-- Lombok
-- Spring Web
+- Gradle
+- Docker
+
+## Architecture
+- Redis Cache configuration
+- Caching in Service layer
+- Repository pattern
+- RESTful API endpoints
 
 ## Installation
-1. Clone the repository
-2. Install Redis on your local machine
-3. Configure Redis connection in application.properties
-4. Run the application
+1. Start Redis with Docker:
+```docker run --name redis -p 6379:6379 -d redis```
+2. Clone the project
+3. Install dependencies with Gradle
+4. Start the application
 
-## API Endpoints
-[List your API endpoints here]
+## Usage
+Check controller classes for API endpoints and caching examples.
 
-## Caching Strategies
-[Explain your caching strategies]
-
-## Monitoring and Management
-[Describe monitoring and management features]
+## Contributing
+1. Fork it
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
