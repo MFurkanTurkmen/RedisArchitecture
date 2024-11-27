@@ -20,11 +20,13 @@ import java.util.stream.Collectors;
 public class BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
-    private final RedisCacheService redisCacheService;
 
-    private static final String BOOK_CACHE_PREFIX = "book:";
-    private static final String BOOKS_CACHE_KEY = "books:all";
-    private static final long CACHE_TTL = 1; // 1 saat
+    @Cacheable(value = "books", key = "#id")
+    public BookRS getBook(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new AppException("Book not found", 4001));
+        return bookMapper.toDto(book);
+    }
 
     @CacheEvict(value = "books", allEntries = true)
     public BookRS createBook(BookRQ bookRQ) {
@@ -32,71 +34,13 @@ public class BookService {
         book.setAuthor(bookRQ.getAuthor());
         book.setName(bookRQ.getName());
         book.setPageCount(bookRQ.getPageCount());
-        book = bookRepository.save(book);
-
-        // Cache'i güncelle
-        BookRS bookRS = getBook(book.getId());
-        redisCacheService.saveWithExpiration(BOOK_CACHE_PREFIX + book.getId(),
-                bookRS, CACHE_TTL, TimeUnit.SECONDS);
-
-        return bookRS;
+        return bookMapper.toDto(bookRepository.save(book));
     }
 
-    @Cacheable(value = "books", key = "#id")
-    public BookRS getBook(Long id) {
-        String cacheKey = BOOK_CACHE_PREFIX + id;
-
-        // Önce cache'den kontrol et
-        Object cachedBook = redisCacheService.get(cacheKey);
-        if (cachedBook != null) {
-            return (BookRS) cachedBook;
-        }
-
-        // Cache'de yoksa DB'den getir
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new AppException("Book not found", 4001));
-
-        BookRS bookRS = new BookRS();
-        bookRS.setAuthor(book.getAuthor());
-        bookRS.setName(book.getName());
-        bookRS.setPageCount(book.getPageCount());
-
-        // Cache'e kaydet
-        redisCacheService.saveWithExpiration(cacheKey, bookRS, CACHE_TTL, TimeUnit.HOURS);
-
-        return bookRS;
-    }
-
-    @Cacheable(value = "books", key = "'all'")
+    @Cacheable(value = "books", key = "'list_' + #adet")
     public List<BookRS> listBook(int adet) {
-        // Önce cache'den kontrol et
-        Object cachedBooks = redisCacheService.get(BOOKS_CACHE_KEY);
-        if (cachedBooks != null) {
-            return (List<BookRS>) cachedBooks;
-        }
-
-        // Cache'de yoksa DB'den getir
-        List<Book> books = bookRepository.findBooks(adet);
-        List<BookRS> bookRSList = books.stream()
+        return bookRepository.findBooks(adet).stream()
                 .map(bookMapper::toDto)
                 .collect(Collectors.toList());
-
-        // Cache'e kaydet
-        redisCacheService.saveWithExpiration(BOOKS_CACHE_KEY,
-                bookRSList, CACHE_TTL, TimeUnit.HOURS);
-
-        return bookRSList;
-    }
-
-    @CacheEvict(value = "books", key = "#id")
-    public void deleteBook(Long id) {
-        bookRepository.deleteById(id);
-        redisCacheService.delete(BOOK_CACHE_PREFIX + id);
-        redisCacheService.delete(BOOKS_CACHE_KEY);
-    }
-
-    @CacheEvict(value = "books", allEntries = true)
-    public void clearCache() {
-        // Tüm cache'i temizle
     }
 }
