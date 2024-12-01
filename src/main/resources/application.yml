@@ -24,25 +24,3 @@ redis:
       min-idle: 0        # Havuzda minimum tutulacak boşta bağlantı
       max-wait: -1ms     # Bağlantı almak için maksimum bekleme süres
 
-
-management:
-endpoints:
-  web:
-    exposure:
-      include: health,info  # Dışarıya açılacak endpoint'ler
-endpoint:
-  health:
-    show-details: always   # Detaylı sağlık bilgisi gösterimi
-    probes:
-      enabled: true        # Kubernetes liveness/readiness probe desteği
-health:
-  redis:
-    enabled: true         # Redis health check'i aktif
-  db:
-    enabled: true
-
-zipkin:
-  enabled: true
-  base-url: http://localhost:9411
-  service:
-    name: benimredisim

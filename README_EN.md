@@ -2,7 +2,7 @@
 ## İçindekiler
 1. [Proje Hakkında](#proje-hakkında)
 2. [Teknolojiler ve Versiyonlar](#teknolojiler-ve-versiyonlar)
-3. [Proje Yapısı](#proje-yapısı)
+3. [Proje Yapısı](#için)
 4. [Redis Entegrasyonu](#redis-entegrasyonu)
 5. [Kurulum ve Çalıştırma](#kurulum-ve-çalıştırma)
 6. [Konfigürasyon Detayları](#konfigürasyon-detayları)
@@ -29,29 +29,18 @@ demonstre eder.
 - **Lombok**: Boilerplate kod azaltımı
 - **MapStruct**: DTO dönüşümleri
 - **SpringDoc OpenAPI**: API dokümantasyonu
-## Proje Yapısı
-```plaintext
-src/
-├── main/
-│ ├── java/
-│ │ └── com/mft/redisarchitecture/
-│ │ ├── config/
-│ │ ├── controller/
-│ │ ├── dto/
-│ │ ├── entity/
-│ │ ├── exception/
-│ │ ├── mapper/
-│ │ ├── repository/
-│ │ └── service/
-│ └── resources/
-│ └── application.yml
-```
+
 ## Redis Entegrasyonu
 ### Redis Annotations
-```java @EnableCaching // Önbellekleme sistemini aktifleştirir @Cacheable("books") // Metod sonucunu önbellekte saklar @CacheEvict // Önbellekteki veriyi siler @CachePut // Önbelleği günceller
+```java
+@EnableCaching // Önbellekleme sistemini aktifleştirir 
+@Cacheable("books") // Metod sonucunu önbellekte saklar 
+@CacheEvict // Önbellekteki veriyi siler 
+@CachePut // Önbelleği günceller
 ```
 ### Redis Config Sınıfı
-```java @Configuration @EnableCaching
+``` 
+ @Configuration @EnableCaching
 public class RedisConfig {
     @Bean
     public RedisTemplate redisTemplate() {
@@ -66,7 +55,7 @@ docker run --name redis -p 6379:6379 -d redis
 ```
 2. PostgreSQL Kurulumu:
 ```bash
-docker run --name postgres -e POSTGRES_PASSWORD=postgres -p 5444:5432 -d postgres
+docker run --name postgres -e POSTGRES_PASSWORD="şifreniz" -p 5444:5432 -d postgres
 ```
 3. Uygulamayı Çalıştırma:
 ```bash
@@ -75,20 +64,33 @@ docker run --name postgres -e POSTGRES_PASSWORD=postgres -p 5444:5432 -d postgre
 ## Konfigürasyon Detayları
 ### application.yml
 ```yaml
+server:
+  port: 80
 spring:
-datasource:
-url: jdbc:postgresql://localhost:5444/redis
-username: postgres
-password: postgres
-jpa:
-hibernate:
-ddl-auto: update
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5444/redis
+    username: kullanici-adiniz
+    password: şifreniz
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 redis:
-host: localhost
-port: 6379
-timeout: 10000ms
-lettuce:
-pool: max-active: 8 max-idle: 8 min-idle: 0 max-wait: -1ms
+  host: localhost
+  port: 6379
+  timeout: 10000ms
+  lettuce:
+    pool:
+      max-active: 8      
+      max-idle: 8        
+      min-idle: 0     
+      max-wait: -1ms    
+
+
 ```
 ### Redis Bağlantı Havuzu
 - **max-active**: Maksimum aktif bağlantı sayısı
@@ -102,21 +104,50 @@ pool: max-active: 8 max-idle: 8 min-idle: 0 max-wait: -1ms
 - `GET /book/list?adet={adet}`: Belirtilen sayıda kitap listeleme
 ## Redis Cache Stratejileri
 ### Önbellekleme Yaklaşımları
-1. **Look Aside Cache**:
-```
-java @Cacheable(value = "books", key = "#id")
-public BookRS getBook(Long id) {
-// Önce cache'den kontrol
-// Cache'de yoksa DB'den getir
+- **Look Aside Cache**: Önce önbellekte arama yapar, yoksa veritabanından getirir
+- **Write Through Cache**: Hem önbelleğe hem veritabanına yazma işlemi
+- **Write Behind Cache**: Önce veritabanına yazma, ardından önbelleğe yazma
+- **Refresh Ahead Cache**: Önbelleği belirli aralıklarla yenileme
+- **Cache Aside Cache**: Önbelleği sadece okuma işlemlerinde kullanma
+- **Read Through Cache**: Önbellek yoksa veritabanından getirme
+- **Read Around Cache**: Önbellek yoksa veritabanından getirme, önbelleğe yazma
+- **Write Around Cache**: Önbellekten veri silme
+- **Write Only Cache**: Sadece yazma işlemleri
+- **Read Only Cache**: Sadece okuma işlemleri
+- **Write Once Cache**: Sadece bir kere yazma işlemi
+- **Write Behind Cache**: Asenkron yazma işlemi
+- **Near Cache**: Uygulama sunucusuna yakın önbellek
+- **Distributed Cache**: Dağıtık önbellek
+- **Local Cache**: Yerel önbellek
+- **Remote Cache**: Uzak önbellek
+- **In-Memory Cache**: Bellek üzerinde
+- **On-Disk Cache**: Disk üzerinde
+- **Hybrid Cache**: Karma önbellek
+- **Cache-Aside Cache**: Önbelleği sadece okuma işlemlerinde kullanma
+### Örnek Kullanımlar
+#### Önbelleğe Alma
+```java
+@Cacheable("books")
+public Book getBookById(Long id) {
+    return bookRepository.findById(id).orElse(null);
 }
 ```
-2. **Write Through Cache**:
-```
-java @CachePut(value = "books", key = "#result.id")
-public BookRS createBook(BookRQ bookRQ) {
-// Hem DB'ye hem cache'e yaz
+#### Önbellekten Silme
+```java
+@CacheEvict("books")
+public void deleteBookById(Long id) {
+    bookRepository.deleteById(id);
 }
 ```
+
+#### Önbelleği Güncelleme
+```java
+@CachePut("books")
+public Book updateBook(Book book) {
+    return bookRepository.save(book);
+}
+```
+
 ### TTL (Time To Live) Stratejisi
 ```java
 redisCacheService.saveWithExpiration(key, value, CACHE_TTL, TimeUnit.HOURS);
