@@ -10,8 +10,7 @@
 8. [Redis Cache Stratejileri](#redis-cache-stratejileri)
 9. [Performans ve Monitoring](#performans-ve-monitoring)
 10. [Troubleshooting](#troubleshooting)
-## Proje Hakkında Bu proje, Spring Boot uygulamalarında Redis önbellekleme sisteminin nasıl kullanılacağını gösteren kapsamlı bir örnektir. Proje, kitap verilerinin yönetimi üzerinden Redis önbellekleme stratejilerini
-demonstre eder.
+## Proje Hakkında Bu proje, Spring Boot uygulamalarında Redis önbellekleme sisteminin nasıl kullanılacağını gösteren kapsamlı bir örnektir. Proje, kitap verilerinin yönetimi üzerinden Redis önbellekleme stratejilerini demonstre eder.
 ### Temel Özellikler
 - Kitap CRUD işlemleri
 - Redis önbellekleme
@@ -152,17 +151,6 @@ public Book updateBook(Book book) {
 ```java
 redisCacheService.saveWithExpiration(key, value, CACHE_TTL, TimeUnit.HOURS);
 ```
-## Performans ve Monitoring
-### Actuator Endpoints
-```yaml management:
-endpoints: web:
-exposure:
-include: health,info
-```
-### Health Indicators
-- Redis bağlantı durumu
-- Database bağlantı durumu
-- Uygulama sağlık durumu
 ## Troubleshooting
 ### Sık Karşılaşılan Hatalar
 1. Redis Bağlantı Hataları
